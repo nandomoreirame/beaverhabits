@@ -1065,7 +1065,8 @@ def tag_filter_component(active_habits: list[Habit], refresh: Callable):
         TagChip("Others", refresh=refresh)
 
         row.classes("tag-filter")
-        ui.run_javascript("""
+        ui.run_javascript(
+            """
             const element = document.querySelector(".tag-filter");
         
             // scroll event
@@ -1092,7 +1093,8 @@ def tag_filter_component(active_habits: list[Habit], refresh: Callable):
                     element.classList.remove("hidden");
                 }
             }, { passive: true  });
-            """)
+            """
+        )
 
 
 def filter_habits_with_tags(active_habits: list[Habit]) -> list[Habit]:
@@ -1308,9 +1310,7 @@ def habit_edit_dialog(habit: Habit) -> ui.dialog:
                 ).classes("flex-grow")
                 ui.icon("help_outline", size="xs").classes(
                     "cursor-pointer opacity-30 hover:opacity-80"
-                ).style("margin-top: 20px").tooltip(
-                    "Edit default completion status"
-                ).on(
+                ).style("margin-top: 20px").tooltip("Edit default completion status").on(
                     "click", lambda: redirect("completion-status")
                 )
 

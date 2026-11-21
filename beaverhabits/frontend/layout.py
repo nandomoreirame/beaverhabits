@@ -32,7 +32,8 @@ from beaverhabits.version import IDENTITY
 
 def pwa_headers():
     # Extend background to iOS notch
-    ui.add_head_html("""
+    ui.add_head_html(
+        """
         <link rel="apple-touch-icon" href="/statics/images/apple-touch-icon-v4.png">
         
         <meta name="apple-mobile-web-app-title" content="Beaver">
@@ -40,7 +41,8 @@ def pwa_headers():
         
         <meta name="theme-color" content="#F9F9F9" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
-        """)
+        """
+    )
 
     # Experimental PWA
     if settings.ENABLE_IOS_STANDALONE:
@@ -54,7 +56,8 @@ def custom_headers():
     page_url = "https://beaverhabits.com" + page_path()
 
     # SEO meta tags
-    ui.add_head_html(f"""
+    ui.add_head_html(
+        f"""
         <!-- Basic Meta Tags -->
         <meta name="description" content="A minimal habit tracking app without Goals. Track your daily habits with a simple, privacy-focused interface.">
         <meta name="keywords" content="habit tracker, habit tracking, self-hosted, productivity, daily habits, habit building, open source">
@@ -99,7 +102,8 @@ def custom_headers():
             }}
         }}
         </script>
-        """)
+        """
+    )
 
     # Long-press event
     ui.add_head_html('<script src="/statics/libs/long-press-event.min.js"></script>')
