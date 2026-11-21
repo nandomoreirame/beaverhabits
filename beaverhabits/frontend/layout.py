@@ -9,6 +9,7 @@ from beaverhabits.app.auth import user_logout
 from beaverhabits.configs import settings
 from beaverhabits.frontend import css, icons
 from beaverhabits.frontend.fonts import apply_fonts
+from beaverhabits.frontend.noir import BASE_HEX, apply_theme
 from beaverhabits.frontend.components import (
     compat_card,
     habit_edit_dialog,
@@ -34,14 +35,14 @@ from beaverhabits.version import IDENTITY
 def pwa_headers():
     # Extend background to iOS notch
     ui.add_head_html(
-        """
+        f"""
         <link rel="apple-touch-icon" href="/statics/images/apple-touch-icon-v4.png">
         
         <meta name="apple-mobile-web-app-title" content="Beaver">
         <meta name="application-name" content="Beaver">
         
         <meta name="theme-color" content="#F9F9F9" media="(prefers-color-scheme: light)" />
-        <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
+        <meta name="theme-color" content="{BASE_HEX}" media="(prefers-color-scheme: dark)" />
         """
     )
 
@@ -119,6 +120,7 @@ def custom_headers():
     ui.add_css(css.WHITE_FLASH_PREVENT)
     ui.add_css(css.TEXTAREA_CSS)
     apply_fonts()
+    apply_theme()
 
     # prevent context menu
     ui.add_body_html(f"<script>{PREVENT_CONTEXT_MENU}</script>")

@@ -19,6 +19,7 @@ from beaverhabits.configs import TagSelectionMode, settings
 from beaverhabits.core.backup import backup_to_telegram
 from beaverhabits.core.completions import CStatus, get_habit_date_completion
 from beaverhabits.core.note import update_square_style_context
+from beaverhabits.frontend import noir
 from beaverhabits.frontend import icons
 from beaverhabits.frontend.javascript import force_checkbox_blur
 from beaverhabits.frontend.textarea import Textarea
@@ -682,8 +683,10 @@ class CalendarCheckBox(ui.checkbox):
 
     def _icon_svg(self):
         # Customize icon colors
-        unchecked_text_color = checked_text_color = "rgb(255,255,255)"
-        unchecked_color, checked_color = "rgb(54,54,54)", icons.PRIMARY_COLOR
+        unchecked_text_color = noir.pick(noir.TEXT_MUTED, "rgb(255,255,255)")
+        checked_text_color = noir.pick(noir.ON_ACCENT, "rgb(255,255,255)")
+        unchecked_color = noir.pick(noir.CELL, "rgb(54,54,54)")
+        checked_color = icons.PRIMARY_COLOR
         dark = get_user_dark_mode()
         if dark == False:
             unchecked_color = "rgb(222,222,222)"
@@ -692,7 +695,7 @@ class CalendarCheckBox(ui.checkbox):
         # Period done -> Normalization + Linear Interpolation
         if CStatus.PERIOD_DONE in self.status:
             if dark:
-                unchecked_color = "rgb(40,87,141)"
+                unchecked_color = noir.pick(noir.PERIOD_DONE, "rgb(40,87,141)")
             else:
                 # Interpolation with .25
                 unchecked_color = "rgb(201,213,226)"
@@ -818,7 +821,7 @@ def habit_history(today: datetime.date, habit: Habit, total_months: int = 13):
                 "splitLine": {
                     "show": True,
                     "lineStyle": {
-                        "color": "#303030",
+                        "color": noir.pick(noir.BORDER_HEX, "#303030"),
                     },
                 },
             },
@@ -997,7 +1000,7 @@ def habit_streak(today: datetime.date, habit: Habit):
                 "splitLine": {
                     "show": True,
                     "lineStyle": {
-                        "color": "#303030",
+                        "color": noir.pick(noir.BORDER_HEX, "#303030"),
                     },
                 },
             },

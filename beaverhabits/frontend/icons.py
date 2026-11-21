@@ -1,13 +1,15 @@
 import re
 from functools import lru_cache
 
+from beaverhabits.frontend import noir
+
 # https://editsvgcode.com/
 SVG_RAW = "img:data:image/svg+xml;charset=utf8,{content}"
 SVG_TEMPLATE = "img:data:image/svg+xml;charset=utf8,<svg xmlns='http://www.w3.org/2000/svg' height='{height}' viewBox='0 -960 960 960' width='{height}' fill='{color}'><path d='{data}'/></svg>"
 SVG_CLASS_TEMPLATE = "img:data:image/svg+xml;charset=utf8,<svg xmlns='http://www.w3.org/2000/svg' height='{height}' viewBox='0 -960 960 960' width='{height}' class='{css_class}'><path d='{data}'/></svg>"
 
-PRIMARY_COLOR = "rgb(103,150,207)"
-CLOSE_COLOR = "rgb(97,97,97)"
+PRIMARY_COLOR = noir.accent(default="rgb(103,150,207)")
+CLOSE_COLOR = noir.pick(noir.FAINT, "rgb(97,97,97)")
 card_bg_color = "rgb(29,29,29)"
 unchecked_square_color = "rgb(54,54,54)"
 
@@ -25,7 +27,7 @@ def fade(color: str, alpha: float):
 
 # fmt: off
 DONE = SVG_TEMPLATE.format(height="24", color=PRIMARY_COLOR, data="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z")
-DONE_OUTLINE = SVG_TEMPLATE.format(height="24", color="rgb(103,150,207,0.75)", data="m395-285 339-339-50-51-289 288-119-118-50 50 169 170Zm1 102L124-455l152-152 119 118 289-288 153 153-441 441Z")
+DONE_OUTLINE = SVG_TEMPLATE.format(height="24", color=noir.pick("rgb(245,166,35,0.75)", "rgb(103,150,207,0.75)"), data="m395-285 339-339-50-51-289 288-119-118-50 50 169 170Zm1 102L124-455l152-152 119 118 289-288 153 153-441 441Z")
 DONE_ALL = SVG_TEMPLATE.format(height="24", color=PRIMARY_COLOR, data="M268-240 42-466l57-56 170 170 56 56-57 56Zm226 0L268-466l56-57 170 170 368-368 56 57-424 424Zm0-226-57-56 198-198 57 56-198 198Z")
 
 # CLOSE = SVG_TEMPLATE.format(height="24", color="rgb(97,97,97)", data="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z")
