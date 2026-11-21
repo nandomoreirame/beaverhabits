@@ -9,6 +9,7 @@ As mudanças ficam em módulos novos para que o `git merge upstream/main` gere o
 | Mudança | Onde |
 |---|---|
 | Fontes Inter (texto) e JetBrains Mono (datas e números), servidas localmente | `beaverhabits/frontend/fonts.py`, `statics/fonts/` |
+| Tema Terminal Noir no modo escuro (paleta v0.3.2, acento âmbar) e tamanho base da fonte por `FONT_SIZE` (px, padrão 16, de 12 a 22) | `beaverhabits/frontend/noir.py` |
 | Interface em pt-BR com `LANGUAGE=pt-BR`; sem a variável, continua em inglês | `beaverhabits/i18n.py`, `beaverhabits/locales/pt_BR.json` |
 | API estendida para widgets de desktop | `beaverhabits/routes/api_ext.py`, `beaverhabits/core/summary.py` |
 | Deploy no homelab | `compose.yml`, `bin/deploy`, `deploy/Caddyfile.snippet` |
@@ -35,6 +36,10 @@ As rotas originais (`/api/v1/habits`, criar, editar, arquivar, excluir) continua
 ## Tradução
 
 O texto em inglês é a chave do catálogo: string nova sem tradução aparece em inglês, nunca quebra. Para traduzir, envolva o texto com `t("...")` (placeholders com `t("{days} days ago", days=n)`) e adicione a entrada em `beaverhabits/locales/pt_BR.json`. O teste `tests/test_i18n.py` falha se uma tradução vier vazia ou perder um placeholder. Componentes do Quasar (calendário) usam o pacote de idioma do próprio Quasar.
+
+## Tema
+
+O Terminal Noir vale só no modo escuro. O CSS fica escopado em `.body--dark`; os ícones de check e as células do heatmap são SVGs com cor embutida, então usam a paleta Noir quando `DARK_MODE=true` (tema escuro fixo na instância). Com o modo escuro escolhido por usuário (`DARK_MODE` vazio), o CSS se aplica, mas os SVGs mantêm o azul do upstream. As cores vêm de `~/dev/projects/terminalnoir/palette/palette.json`; quando a versão da paleta mudar, atualize as constantes no topo de `noir.py`.
 
 ## Desenvolvimento
 
