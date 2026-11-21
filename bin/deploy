@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Test, sync and rebuild the fork on the homelab. Never touches data/ or .env there.
+set -eo pipefail
+cd "$(dirname "$0")/.."
+
+REMOTE_HOST="${REMOTE_HOST:-homelab}"
+REMOTE_DIR="${REMOTE_DIR:-beaverhabits}"
+URL="https://habitos.home.nandomoreira.me/health"
+
+echo "==> tests"
+DATABASE_URL="sqlite+aiosqlite:///:memory:" HABITS_STORAGE="USER_DISK" uv run pytest -q
+
+echo "==> sync to ${REMOTE_HOST}:${REMOTE_DIR}"
+rsync -az --delete \
+  --exclude .git --exclude .venv --exclude .user --exclude .pytest_cache \
+  --exclude __pycache__ --exclude data --exclude .env --exclude .claude \
+  ./ "${REMOTE_HOST}:${REMOTE_DIR}/"
+
+echo "==> build and restart"
+ssh -T "$REMOTE_HOST" "cd '${REMOTE_DIR}' && docker compose up -d --build"
+
+echo "==> health"
+for _ in $(seq 1 30); do
+  code=$(curl -s -o /dev/null -w '%{http_code}' "$URL" || true)
+  [ "$code" = 200 ] && { echo "ok ${URL}"; exit 0; }
+  sleep 2
+done
+echo "health check failed: ${URL} (last code ${code})" >&2
+exit 1

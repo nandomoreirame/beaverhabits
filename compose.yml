@@ -1,0 +1,40 @@
+# Homelab deployment of this fork (see FORK.md). Data and secrets stay on the host.
+services:
+  beaverhabits:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: beaverhabits-fork:latest
+    container_name: beaverhabits
+    restart: unless-stopped
+    user: "1000:1000"
+    env_file: .env
+    environment:
+      HABITS_STORAGE: DATABASE
+      MAX_USER_COUNT: "1"
+      TIME_ZONE: America/Sao_Paulo
+      LANGUAGE: pt-BR
+      DARK_MODE: "true"
+      ENABLE_DAILY_BACKUP: "true"
+      APP_URL: https://habitos.home.nandomoreira.me
+    volumes:
+      - ./data:/app/.user
+    ports:
+      - "127.0.0.1:4193:8080"
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "healthcheck.py"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+
+# CasaOS reads this block: the tile opens the site instead of trying to start the container
+x-casaos:
+  title:
+    custom: Hábitos
+  icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/beaver-habit-tracker.png
+  scheme: https
+  hostname: habitos.home.nandomoreira.me
+  port_map: "443"
+  index: /

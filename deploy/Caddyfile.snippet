@@ -1,0 +1,9 @@
+# Paste inside the *.home.nandomoreira.me site of ~/caddy/Caddyfile, before the final 404 handle.
+# Validate and reload:
+#   docker exec -i caddy caddy validate --adapter caddyfile --config /dev/stdin < ~/caddy/Caddyfile
+#   docker exec -i caddy caddy reload --adapter caddyfile --config /dev/stdin < ~/caddy/Caddyfile
+@habitos host habitos.home.nandomoreira.me
+handle @habitos {
+	import noindex
+	reverse_proxy localhost:4193
+}
