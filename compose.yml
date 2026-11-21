@@ -14,6 +14,7 @@ services:
       MAX_USER_COUNT: "1"
       TIME_ZONE: America/Sao_Paulo
       LANGUAGE: pt-BR
+      FONT_SIZE: "16"
       DARK_MODE: "true"
       ENABLE_DAILY_BACKUP: "true"
       APP_URL: https://habitos.home.nandomoreira.me
