@@ -3,6 +3,7 @@ import enum
 
 from nicegui import app, ui
 
+from beaverhabits.i18n import t
 from beaverhabits import utils
 from beaverhabits.frontend.components import compat_card, menu_icon_item
 from beaverhabits.frontend.layout import redirect
@@ -14,7 +15,7 @@ STATS_END_DATE = "stats_end_date"
 
 def add_menu():
     add = menu_icon_item("Add", lambda: redirect("add"))
-    add.props('aria-label="Add habit"')
+    add.props(f'aria-label="{t("Add habit")}"')
 
 
 def sort_menu(habit_list: HabitList):
@@ -99,11 +100,11 @@ def stats_date_pick_menu():
                 today - datetime.timedelta(weeks=26),
                 today,
             )
-        date_input = ui.input("Date range", value=date_str).classes("w-64")
+        date_input = ui.input(t("Date range"), value=date_str).classes("w-64")
 
         with ui.row():
-            ui.button("Apply", on_click=apply_custom_date_range)
-            ui.button("Close", on_click=dialog.close)
+            ui.button(t("Apply"), on_click=apply_custom_date_range)
+            ui.button(t("Close"), on_click=dialog.close)
 
     with ui.menu().props('anchor="top end" self="top start" auto-close'):
         options = [

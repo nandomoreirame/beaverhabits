@@ -1,5 +1,6 @@
 from nicegui import ui
 
+from beaverhabits.i18n import t
 from beaverhabits.frontend import components
 from beaverhabits.frontend.components import (
     HabitAddButton,
@@ -25,16 +26,16 @@ def add_ui(habit_list: HabitList):
             with HabitNameInput(item, refresh=add_ui.refresh) as name:
                 name.classes("col-span-8 break-all")
                 name.props(
-                    'aria-label="Habit name" aria-description="press enter to save"'
+                    f'aria-label="{t("Habit name")}" aria-description="{t("press enter to save")}"'
                 )
 
             star = HabitStarCheckbox(item, add_ui.refresh)
             star.classes("col-span-1")
-            star.props('aria-label="Star habit" aria-description="move to top of list"')
+            star.props(f'aria-label="{t("Star habit")}" aria-description="{t("move to top of list")}"')
 
             delete = HabitDeleteButton(item, habit_list, add_ui.refresh)
             delete.classes("col-span-1")
-            delete.props('aria-label="Delete habit"')
+            delete.props(f'aria-label="{t("Delete habit")}"')
 
 
 def add_page_ui(habit_list: HabitList):

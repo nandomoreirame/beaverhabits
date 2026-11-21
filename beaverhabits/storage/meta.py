@@ -1,5 +1,6 @@
 from nicegui import context
 
+from beaverhabits.i18n import t
 from beaverhabits.storage.storage import Habit
 
 DEMO_ROOT_PATH = "/demo"
@@ -7,7 +8,7 @@ GUI_ROOT_PATH = "/gui"
 
 
 def page_title() -> str:
-    return "Demo" if is_page_demo() else "Habits"
+    return t("Demo") if is_page_demo() else t("Habits")
 
 
 def page_path() -> str:

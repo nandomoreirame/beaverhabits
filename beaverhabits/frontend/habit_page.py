@@ -4,6 +4,7 @@ from contextlib import contextmanager
 
 from nicegui import ui
 
+from beaverhabits.i18n import t
 from beaverhabits.configs import settings
 from beaverhabits.frontend import javascript
 from beaverhabits.frontend.components import (
@@ -64,7 +65,7 @@ def habit_page(today: datetime.date, habit: Habit):
             )
 
         with card():
-            card_title("Last 3 Months", target)
+            card_title(t("Last 3 Months"), target)
             ui.space().classes("h-1")
             habit_calendar = CalendarHeatmap.build(
                 today, WEEKS_TO_DISPLAY, calendar.MONDAY
@@ -72,18 +73,18 @@ def habit_page(today: datetime.date, habit: Habit):
             habit_heat_map(habit, habit_calendar, refresh=habit_page.refresh)
 
         with card():
-            card_title("Last Year", target)
+            card_title(t("Last Year"), target)
             habit_history(today, habit)
 
         with card(padding=2):
-            card_title("Notes", "#").tooltip("Press and hold to add notes/descriptions")
+            card_title(t("Notes"), "#").tooltip(t("Press and hold to add notes/descriptions"))
             habit_notes(habit)
 
         if habit.period and (
             habit.period != EVERY_DAY or settings.HABIT_SHOW_EVERY_DAY_STREAKS
         ):
             with card():
-                card_title("Best Streaks", target)
+                card_title(t("Best Streaks"), target)
                 habit_streak(today, habit)
 
         with card(target, padding=0.5):

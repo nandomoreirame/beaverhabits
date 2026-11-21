@@ -4,6 +4,7 @@ from io import StringIO
 
 from nicegui import events, ui
 
+from beaverhabits.i18n import t
 from beaverhabits import const
 from beaverhabits.app.db import User
 from beaverhabits.frontend import icons
@@ -93,8 +94,8 @@ def import_ui_page(user: User):
                     + f"{len(merged)} habits will be merged.",
                 )
                 with ui.row():
-                    ui.button("Yes", on_click=lambda: dialog.submit("Yes"))
-                    ui.button("No", on_click=lambda: dialog.submit("No"))
+                    ui.button(t("Yes"), on_click=lambda: dialog.submit("Yes"))
+                    ui.button(t("No"), on_click=lambda: dialog.submit("No"))
             result = await dialog
             if result != "Yes":
                 return
@@ -109,12 +110,12 @@ def import_ui_page(user: User):
                 color="positive",
             )
         except json.JSONDecodeError:
-            ui.notify("Import failed: Invalid JSON", color="negative", position="top")
+            ui.notify(t("Import failed: Invalid JSON"), color="negative", position="top")
         except Exception as error:
             logger.exception("Import failed")
             ui.notify(str(error), color="negative", position="top")
 
-    with layout(title="Import"):
+    with layout(title=t("Import")):
         with ui.column().classes("gap-2"):
             # Upload: https://nicegui.io/documentation/upload
             upload = ui.upload(on_upload=handle_upload, max_files=1)
@@ -123,6 +124,6 @@ def import_ui_page(user: User):
 
             # Note
             with ui.row().classes("gap-1"):
-                ui.label("Restore your existing setup and continue")
+                ui.label(t("Restore your existing setup and continue"))
                 with ui.link(target=const.IMPORT_WIKI_PAGE, new_tab=True):
                     ui.icon(icons.HELP)

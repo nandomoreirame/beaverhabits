@@ -2,6 +2,7 @@ from typing import Optional
 
 from nicegui import ui
 
+from beaverhabits.i18n import t
 from beaverhabits import views
 from beaverhabits.app.db import User
 from beaverhabits.frontend.layout import layout
@@ -31,7 +32,7 @@ async def chip_sets_page(user: Optional[User] = None):
         with ui.column().classes("w-full max-w-[600px] px-4 gap-4"):
             # Header
             with ui.row().classes("w-full items-center justify-between"):
-                ui.label("Completion Status").classes("text-lg font-medium")
+                ui.label(t("Completion Status")).classes("text-lg font-medium")
                 ui.link(
                     "Docs ↗",
                     "https://github.com/daya0576/beaverhabits/wiki/Daily-Notes-&-Descriptions#streak-customization",
@@ -42,7 +43,7 @@ async def chip_sets_page(user: Optional[User] = None):
 
             # Section 1: Default status
             with ui.column().classes("w-full gap-1"):
-                ui.label("Default Status").classes("text-sm font-medium opacity-80")
+                ui.label(t("Default Status")).classes("text-sm font-medium opacity-80")
                 ui.label(
                     "Default status buttons shown in the note dialog (e.g. yes, no, skip)."
                 ).classes("text-xs opacity-50")
@@ -56,7 +57,7 @@ async def chip_sets_page(user: Optional[User] = None):
 
             # Section 2: Custom status
             with ui.column().classes("w-full gap-1"):
-                ui.label("Custom Status").classes("text-sm font-medium opacity-80")
+                ui.label(t("Custom Status")).classes("text-sm font-medium opacity-80")
                 ui.label(
                     "Map a status to tags that are auto-appended to the note on click."
                 ).classes("text-xs opacity-50")
@@ -69,6 +70,6 @@ async def chip_sets_page(user: Optional[User] = None):
             async def save_chips():
                 mapping = _chips_to_mapping(mapping_input.value)
                 await views.update_default_chips(user, chips_input.value, mapping)
-                ui.notify("Saved", color="positive")
+                ui.notify(t("Saved"), color="positive")
 
-            ui.button("Save", on_click=save_chips).props("flat dense")
+            ui.button(t("Save"), on_click=save_chips).props("flat dense")

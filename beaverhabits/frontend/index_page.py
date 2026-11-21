@@ -3,6 +3,8 @@ from typing import List
 
 from nicegui import ui
 
+from beaverhabits import i18n
+from beaverhabits.i18n import t
 from beaverhabits import utils
 from beaverhabits.configs import settings
 from beaverhabits.core.completions import get_habit_date_completion
@@ -48,7 +50,7 @@ def grid(columns, rows):
 
 def week_headers(days: list[datetime.date]):
     for day in days:
-        yield day.strftime("%a")
+        yield i18n.day_abbr(day.weekday())
     if settings.INDEX_SHOW_HABIT_STREAK:
         yield "Stk"
     if settings.INDEX_SHOW_HABIT_COUNT:
@@ -157,7 +159,7 @@ def index_page_ui(days: list[datetime.date], habits: HabitList):
             tag_filter_component(active_habits, refresh=habit_list_ui.refresh)
 
         if not active_habits:
-            ui.label("List is empty.").classes("mx-auto w-80")
+            ui.label(t("List is empty.")).classes("mx-auto w-80")
             return
         habit_list_ui(days, active_habits)
 

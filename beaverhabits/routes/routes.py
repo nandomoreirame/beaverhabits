@@ -5,6 +5,8 @@ from fastapi import Depends, FastAPI, File, HTTPException, Request, UploadFile, 
 from fastapi.responses import FileResponse, RedirectResponse, StreamingResponse
 from nicegui import Client, app, ui
 
+from beaverhabits import i18n
+from beaverhabits.i18n import t
 from beaverhabits import const, views
 from beaverhabits.app.auth import (
     user_authenticate,
@@ -113,7 +115,7 @@ async def demo_chip_sets() -> None:
 async def demo_export() -> None:
     habit_list = views.get_session_habit_list()
     if not habit_list:
-        ui.notify("No habits to export", color="negative")
+        ui.notify(t("No habits to export"), color="negative")
         return
     await views.export_user_habit_list(habit_list, "demo")
 
@@ -171,7 +173,7 @@ async def gui_habit_page_heatmap(
 async def gui_export(user: User = Depends(current_active_user)) -> None:
     habit_list = await views.get_user_habit_list(user)
     if not habit_list:
-        ui.notify("No habits to export", color="negative")
+        ui.notify(t("No habits to export"), color="negative")
         return
     await export_page(habit_list, user)
 
@@ -209,10 +211,10 @@ async def login_page(client: Client) -> Optional[RedirectResponse]:
 
     async def try_login():
         if not email.value:
-            ui.notify("Email is required", color="negative")
+            ui.notify(t("Email is required"), color="negative")
             return
         if not password.value:
-            ui.notify("Password is required", color="negative")
+            ui.notify(t("Password is required"), color="negative")
             return
 
         logger.info(f"Trying to login with {email.value}")
@@ -221,7 +223,7 @@ async def login_page(client: Client) -> Optional[RedirectResponse]:
             await views.login_user(user)
             ui.navigate.to(GUI_ROOT_PATH)
         else:
-            ui.notify("email or password wrong!", color="negative")
+            ui.notify(t("email or password wrong!"), color="negative")
 
     try:
         # Wait for the handshake before sending events to the server
@@ -230,7 +232,7 @@ async def login_page(client: Client) -> Optional[RedirectResponse]:
         # Ignore weak dependency
         logger.warning("Client not connected, skipping...")
 
-    with auth_card(title="Sign in", func=try_login):
+    with auth_card(title=t("Sign in"), func=try_login):
         email = auth_email()
         password = auth_password().on("keydown.enter", try_login)
 
@@ -253,14 +255,14 @@ async def register_page():
 
     async def try_register():
         if not email.value:
-            ui.notify("Email is required", color="negative")
+            ui.notify(t("Email is required"), color="negative")
             return
         if (
             not password1.value
             or not password2.value
             or password1.value != password2.value
         ):
-            ui.notify("Passwords do not match", color="negative")
+            ui.notify(t("Passwords do not match"), color="negative")
             return
 
         try:
@@ -276,7 +278,7 @@ async def register_page():
 
     await views.validate_max_user_count()
 
-    with auth_card(title="Sign up", func=try_register):
+    with auth_card(title=t("Sign up"), func=try_register):
         email = auth_email()
         password1 = auth_password().on("keydown.enter", try_register)
         password2 = auth_password("Confirm password").on("keydown.enter", try_register)
@@ -293,16 +295,16 @@ async def forgot_password_page(user: User = Depends(get_reset_user)):
 
     async def try_reset():
         if not password1.value or not password2.value:
-            ui.notify("Password is required", color="negative")
+            ui.notify(t("Password is required"), color="negative")
             return
         if password1.value != password2.value:
-            ui.notify("Passwords do not match", color="negative")
+            ui.notify(t("Passwords do not match"), color="negative")
             return
 
         logger.info(f"Trying to reset password for {user.email}")
         await views.reset_password(user, password1.value)
 
-    with auth_card(title="Reset password", func=try_reset):
+    with auth_card(title=t("Reset password"), func=try_reset):
         auth_email(user.email).disable()
         password1 = auth_password("New password")
         password2 = auth_password("Confirm password")
@@ -334,7 +336,7 @@ def init_gui_routes(fastapi_app: FastAPI):
     def handle_exception(exception: Exception):
         if isinstance(exception, HTTPException):
             if exception.status_code == status.HTTP_429_TOO_MANY_REQUESTS:
-                ui.notify(f"An error occurred: {exception}", type="negative")
+                ui.notify(t("An error occurred: {error}", error=exception), type="negative")
 
     @app.middleware("http")
     async def AuthMiddleware(request: Request, call_next):
@@ -377,6 +379,7 @@ def init_gui_routes(fastapi_app: FastAPI):
         title=const.PAGE_TITLE,
         storage_secret=settings.NICEGUI_STORAGE_SECRET,
         favicon="statics/images/favicon.svg",
+        language=i18n.quasar_language(),
         dark=settings.DARK_MODE,
         reconnect_timeout=10,
         # Viewport Settings for Web Applications

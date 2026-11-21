@@ -9,6 +9,7 @@ from typing import Sequence
 from fastapi import HTTPException
 from nicegui import app, run, ui
 
+from beaverhabits.i18n import t
 from beaverhabits.app import crud
 from beaverhabits.app.auth import (
     user_check_token,
@@ -251,14 +252,14 @@ async def forgot_password(email: str) -> None:
             f"Click the link to reset your password: {settings.APP_URL}/reset-password?token={token}",
             [user.email],
         )
-        ui.notify(f"Reset password email sent to {user.email}", color="positive")
+        ui.notify(t("Reset password email sent to {email}", email=user.email), color="positive")
         logger.debug(f"Reset password email sent to {user.email}")
 
 
 async def reset_password(user: User, password: str) -> None:
     new_user = await user_reset_password(user, password)
 
-    ui.notify("Password reset successfully", color="positive")
+    ui.notify(t("Password reset successfully"), color="positive")
 
     await login_user(new_user)
     redirect(GUI_ROOT_PATH)

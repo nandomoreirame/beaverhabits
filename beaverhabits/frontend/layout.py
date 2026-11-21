@@ -3,6 +3,7 @@ from contextlib import contextmanager
 
 from nicegui import background_tasks, ui
 
+from beaverhabits.i18n import t
 from beaverhabits import views
 from beaverhabits.app.auth import user_logout
 from beaverhabits.configs import settings
@@ -136,10 +137,10 @@ def show_help_dialog():
                 ui.separator()
 
                 items = {
-                    "Documentation": "https://github.com/daya0576/beaverhabits/wiki",
+                    t("Documentation"): "https://github.com/daya0576/beaverhabits/wiki",
                     "Supporter": "https://www.beaverhabits.com/pricing",
                     "YouTube": "https://www.youtube.com/@beaverhabits",
-                    "Bugs & Feature Requests": "https://github.com/daya0576/beaverhabits/issues",
+                    t("Bugs & Feature Requests"): "https://github.com/daya0576/beaverhabits/issues",
                 }
 
                 with ui.grid(columns=2).classes("gap-2"):
@@ -209,13 +210,13 @@ def layout(
 
             if habit:
                 edit_dialog = habit_edit_dialog(habit)
-                edit_btn = menu_icon_button("sym_r_pen_size_3", tooltip="Edit habit")
+                edit_btn = menu_icon_button("sym_r_pen_size_3", tooltip=t("Edit habit"))
                 edit_btn.on_click(edit_dialog.open)
             elif habit_list and "add" in page_path():
-                with menu_icon_button("sym_o_swap_vert", tooltip="Sort"):
+                with menu_icon_button("sym_o_swap_vert", tooltip=t("Sort")):
                     sort_menu(habit_list)
             elif "stats" in page_path() and page_ui:
-                with menu_icon_button("sym_o_expand_content", tooltip="Date"):
+                with menu_icon_button("sym_o_expand_content", tooltip=t("Date")):
                     stats_date_pick_menu()
 
             with menu_icon_button("sym_o_menu"):

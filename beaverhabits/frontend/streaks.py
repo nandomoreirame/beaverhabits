@@ -2,6 +2,7 @@ import datetime
 
 from nicegui import ui
 
+from beaverhabits.i18n import t
 from beaverhabits.configs import settings
 from beaverhabits.frontend.components import (
     CalendarHeatmap,
@@ -40,13 +41,13 @@ def streaks(today: datetime.date, habit: Habit):
 
 def history(today: datetime.date, habit: Habit):
     with compat_card():
-        ui.label("History").classes("text-lg")
+        ui.label(t("History")).classes("text-lg")
         habit_history(today, habit, total_months=48)
 
 
 def notes(habit: Habit, limit: int = 100):
     with compat_card():
-        ui.label("Notes").classes("text-lg")
+        ui.label(t("Notes")).classes("text-lg")
         habit_notes(habit, limit=limit)
 
 

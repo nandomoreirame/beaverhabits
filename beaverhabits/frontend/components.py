@@ -11,6 +11,8 @@ from nicegui import app, events, ui
 from nicegui.element import Element
 from nicegui.elements.button import Button
 
+from beaverhabits import i18n
+from beaverhabits.i18n import t
 from beaverhabits import utils, views
 from beaverhabits.accessibility import index_total_badge_alternative_text
 from beaverhabits.configs import TagSelectionMode, settings
@@ -87,7 +89,7 @@ def separator():
 def menu_header(title: str, target: str):
     page_title = link(title, target=target)
     page_title.classes("text-2xl")
-    page_title.props('role="heading" aria-level="1" aria-label="Go to home page"')
+    page_title.props(f'role="heading" aria-level="1" aria-label="{t("Go to home page")}"')
     return page_title
 
 
@@ -103,12 +105,14 @@ def menu_icon_button(
             button.props(f'aria-label="{tooltip}"')
         else:
             # Accessibility
-            button.props('aria-haspopup="true" aria-label="menu"')
+            button.props(f'aria-haspopup="true" aria-label="{t("Menu")}"')
 
     return button
 
 
 def menu_icon_item(*args, **kwargs):
+    if args and isinstance(args[0], str):
+        args = (t(args[0]), *args[1:])
     menu_item = ui.menu_item(*args, **kwargs).classes("items-center")
     # Accessibility
     return menu_item.props('dense role="menuitem"')
@@ -146,7 +150,7 @@ async def habit_tick_dialog(habit: Habit, day: datetime.date):
 
         with ui.column().classes("gap-0 w-full"):
             t = Textarea(
-                label=f"Note ({label})" if label else "Note",
+                label=t("Note ({label})", label=label) if label else "Note",
                 value=record.text if record else "",
                 validation={
                     "Too long!": lambda value: len(value)
@@ -333,11 +337,11 @@ class HabitCheckBox(ui.checkbox):
         # Accessibility
         days = (self.today - self.day).days
         if days == 0:
-            self.props('aria-label="Today"')
+            self.props(f'aria-label="{t("Today")}"')
         elif days == 1:
-            self.props('aria-label="Yesterday"')
+            self.props(f'aria-label="{t("Yesterday")}"')
         else:
-            self.props(f'aria-label="{days} days ago"')
+            self.props(f'aria-label="{t("{days} days ago", days=days)}"')
 
         # icons, e.g. sym_o_notes
         checked, unchecked = "sym_o_check", "sym_o_close"
@@ -484,10 +488,10 @@ class HabitDeleteButton(ui.button):
 
         # Double confirm dialog to delete habit
         with ui.dialog() as dialog, ui.card():
-            ui.label(f"Are you sure to delete habit: {habit.name}?")
+            ui.label(t("Are you sure to delete habit: {name}?", name=habit.name))
             with ui.row():
-                ui.button("Yes", on_click=lambda: dialog.submit(True))
-                ui.button("No", on_click=lambda: dialog.submit(False))
+                ui.button(t("Yes"), on_click=lambda: dialog.submit(True))
+                ui.button(t("No"), on_click=lambda: dialog.submit(False))
         self.dialog = dialog
 
     async def _async_task(self):
@@ -506,7 +510,7 @@ class HabitDeleteButton(ui.button):
 
 class HabitAddButton(ui.input):
     def __init__(self, habit_list: HabitList, refresh: Callable) -> None:
-        super().__init__("New item")
+        super().__init__(t("New item"))
         self.habit_list = habit_list
         self.refresh = refresh
         self.on("keydown.enter", self._async_task)
@@ -599,7 +603,7 @@ class CalendarHeatmap:
     ):
         data = cls.generate_calendar_days(today, weeks, firstweekday)
         headers = cls.generate_calendar_headers(data[0])
-        week_day_abbr = [calendar.day_abbr[(firstweekday + i) % 7] for i in range(7)]
+        week_day_abbr = [i18n.day_abbr(firstweekday + i) for i in range(7)]
 
         return cls(today, headers, data, week_day_abbr)
 
@@ -613,7 +617,7 @@ class CalendarHeatmap:
         for day in days:
             cur_month, cur_year = day.month, day.year
             if cur_month != month:
-                result.append(calendar.month_abbr[cur_month])
+                result.append(i18n.month_abbr(cur_month))
                 month = cur_month
                 continue
             if cur_year != year:
@@ -794,7 +798,7 @@ def habit_history(today: datetime.date, habit: Habit, total_months: int = 13):
     months, data = [], []
     for i in range(total_months, 0, -1):
         offset_date = today - relativedelta(months=i)
-        months.append(offset_date.strftime("%b"))
+        months.append(i18n.month_abbr(offset_date.month))
 
         count = sum(
             1
@@ -933,7 +937,7 @@ def habit_notes(habit: Habit, limit: int = 10):
             # text = record.text.replace(" ", "&nbsp;")
             color = "primary" if record.done else "grey-8"
             with ui.timeline_entry(
-                subtitle=record.day.strftime("%B %d, %Y"),
+                subtitle=i18n.long_date(record.day),
                 color=color,
             ) as entry:
                 with ui.column().classes("gap-0"):
@@ -1179,24 +1183,24 @@ def habit_backup_dialog(habit_list: HabitList) -> ui.dialog:
             telegram_chat_id=chat_id_input.value,
             telegram_bot_token=bot_token_input.value,
         )
-        ui.notify("Backup saved", color="positive")
+        ui.notify(t("Backup saved"), color="positive")
 
     async def test_backup():
         bot_token = bot_token_input.value
         if not bot_token:
-            ui.notify("Telegram Bot Token is empty", color="negative")
+            ui.notify(t("Telegram Bot Token is empty"), color="negative")
             return
         telegram_id = chat_id_input.value
         if not telegram_id:
-            ui.notify("Telegram ID is empty", color="negative")
+            ui.notify(t("Telegram ID is empty"), color="negative")
             return
 
         try:
             backup_to_telegram(bot_token, telegram_id, habit_list)
-            ui.notify("Backup test success", color="positive")
+            ui.notify(t("Backup test success"), color="positive")
         except Exception:
             logger.exception("Failed to send backup")
-            ui.notify(f"Invalid Telegram ID: {telegram_id}", color="negative")
+            ui.notify(t("Invalid Telegram ID: {telegram_id}", telegram_id=telegram_id), color="negative")
 
     with ui.dialog() as dialog, ui.card().props("flat") as card:
         dialog.props('backdrop-filter="blur(4px)"')
@@ -1211,8 +1215,8 @@ def habit_backup_dialog(habit_list: HabitList) -> ui.dialog:
             chat_id_input = backup_input("Telegram Chat ID", chat_id)
 
             with ui.row():
-                ui.button("Save").on_click(set_backup)
-                ui.button("Test").on_click(test_backup)
+                ui.button(t("Save")).on_click(set_backup)
+                ui.button(t("Test")).on_click(test_backup)
 
     return dialog
 
@@ -1232,23 +1236,23 @@ def habit_edit_dialog(habit: Habit) -> ui.dialog:
         t_count = target_count.value
 
         if period_type.value not in PERIOD_TYPES:
-            ui.notify("Invalid period type", color="negative")
+            ui.notify(t("Invalid period type"), color="negative")
             return False
         p_type: PERIOD_TYPE = period_type.value
 
         # Check value is digit
         if not p_count.isdigit() or not t_count.isdigit():
-            ui.notify("Invalid interval", color="negative")
+            ui.notify(t("Invalid interval"), color="negative")
             return False
         p_count, t_count = int(p_count), int(t_count)
         if p_count <= 0 or t_count <= 0:
-            ui.notify("Invalid period count", color="negative")
+            ui.notify(t("Invalid period count"), color="negative")
             return False
 
         # Check value is in range
         max_times = {D: 1, W: 7, M: 31, Y: 366}
         if t_count > max_times.get(p_type, 1) * p_count:
-            ui.notify("Invalid interval", color="negative")
+            ui.notify(t("Invalid interval"), color="negative")
             return False
 
         habit.period = HabitFrequency(p_type, p_count, t_count)
@@ -1286,37 +1290,39 @@ def habit_edit_dialog(habit: Habit) -> ui.dialog:
         card.classes("w-5/6 max-w-96")
 
         with ui.column().classes("w-full"):
-            habit_name_input = HabitNameInput(habit, label="Name")
+            habit_name_input = HabitNameInput(habit, label=t("Name"))
             habit_name_input.classes("w-full")
 
             # Habit Frequency
             with ui.row().classes("items-center"):
-                target_count = number_input(p.target_count, label="Times")
+                target_count = number_input(p.target_count, label=t("Times"))
 
                 ui.label("/").classes("dark:text-gray-300")
 
-                period_count = number_input(value=p.period_count, label="Every")
+                period_count = number_input(value=p.period_count, label=t("Every"))
                 period_type = ui.select(
-                    PERIOD_TYPES_FOR_HUMAN, value=p.period_type, label=" "
+                    {k: t(v) for k, v in PERIOD_TYPES_FOR_HUMAN.items()},
+                    value=p.period_type,
+                    label=" ",
                 ).props("dense")
 
             # Steak status shortcut
             with ui.row().classes("items-center w-full no-wrap"):
                 chips_value = habit.chips or views.get_default_chips()
                 chips = ui.input_chips(
-                    "Completion Status",
+                    t("Completion Status"),
                     value=chips_value,
                     new_value_mode="add-unique",
                 ).classes("flex-grow")
                 ui.icon("help_outline", size="xs").classes(
                     "cursor-pointer opacity-30 hover:opacity-80"
-                ).style("margin-top: 20px").tooltip("Edit default completion status").on(
+                ).style("margin-top: 20px").tooltip(t("Edit default completion status")).on(
                     "click", lambda: redirect("completion-status")
                 )
 
             with ui.row():
-                ui.button("Save", on_click=save).props("flat dense")
-                ui.button("Reset", on_click=reset).props("flat dense")
+                ui.button(t("Save"), on_click=save).props("flat dense")
+                ui.button(t("Reset"), on_click=reset).props("flat dense")
 
     return dialog
 
@@ -1327,14 +1333,14 @@ def auth_header(text: str):
 
 
 def auth_redirect(text: str, target: str):
-    return link(text, target).classes("text-xs text-gray-950")
+    return link(t(text), target).classes("text-xs text-gray-950")
 
 
 def auth_forgot_password(email_input: ui.input, reset: Callable):
     async def try_forgot_password():
         email = email_input.value
         if not email:
-            ui.notify("Email is required", color="negative")
+            ui.notify(t("Email is required"), color="negative")
             return
 
         spinner.classes(remove="hidden")
@@ -1347,19 +1353,19 @@ def auth_forgot_password(email_input: ui.input, reset: Callable):
 
 
 def auth_email(value: str | None = None):
-    email = ui.input("Email").classes("w-full")
+    email = ui.input(t("Email")).classes("w-full")
     if value:
         email.value = value
     return email
 
 
 def auth_password(title: str = "Password", value: str | None = None):
-    password = ui.input("password", password=True, password_toggle_button=True)
+    password = ui.input(t("Password"), password=True, password_toggle_button=True)
     password.classes("w-full")
     if value:
         password.value = value
     if title:
-        password.label = title
+        password.label = t(title)
     return password
 
 
@@ -1369,7 +1375,7 @@ def auth_card(title: str, func: Callable):
         with ui.column().classes("w-full gap-4"):
             auth_header(title)
             yield
-            ui.button("Continue", on_click=func).props("dense").classes("w-full")
+            ui.button(t("Continue"), on_click=func).props("dense").classes("w-full")
 
 
 def habit_name_menu(

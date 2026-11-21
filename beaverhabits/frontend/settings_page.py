@@ -1,5 +1,6 @@
 from nicegui import ui
 
+from beaverhabits.i18n import t
 from beaverhabits import views
 from beaverhabits.app.db import User
 from beaverhabits.frontend.layout import layout
@@ -27,14 +28,14 @@ async def settings_page(user: User):
         else:
             ui.dark_mode().disable()
 
-    with layout(title="Settings"):
+    with layout(title=t("Settings")):
         with ui.column().classes("w-[600px]"):
-            # ui.label("Darkmode").classes("text-lg font-bold")
+            # ui.label(t("Darkmode")).classes("text-lg font-bold")
             # with ui.row():
-            #     ui.button("Dark", on_click=lambda: toggle_dark_mode(True))
-            #     ui.button("Light", on_click=lambda: toggle_dark_mode(False))
+            #     ui.button(t("Dark"), on_click=lambda: toggle_dark_mode(True))
+            #     ui.button(t("Light"), on_click=lambda: toggle_dark_mode(False))
 
-            ui.label("Custom CSS").classes("text-lg font-bold")
+            ui.label(t("Custom CSS")).classes("text-lg font-bold")
             editor = ui.codemirror(
                 configs.custom_css or EDIT_ME, language="CSS", theme="githubDark"
             ).classes("h-96")
