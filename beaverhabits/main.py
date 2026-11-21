@@ -9,6 +9,7 @@ from beaverhabits.app.db import create_db_and_tables
 from beaverhabits.configs import settings
 from beaverhabits.logger import logger
 from beaverhabits.routes.api import init_api_routes
+from beaverhabits.routes.api_ext import init_ext_api_routes
 from beaverhabits.routes.metrics import init_metrics_routes
 from beaverhabits.routes.routes import init_gui_routes
 from beaverhabits.scheduler import daily_backup_task
@@ -49,6 +50,7 @@ app = FastAPI(lifespan=lifespan)
 init_metrics_routes(app)
 init_auth_routes(app)
 init_api_routes(app)
+init_ext_api_routes(app)
 if settings.ENABLE_PLAN:
     from beaverhabits.plan.paddle import init_paddle_routes
     from beaverhabits.routes.astro import init_astro_routes
